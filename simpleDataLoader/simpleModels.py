@@ -4,24 +4,29 @@ from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression, SGDRegressor, RidgeCV, BayesianRidge
 import simpleLoader
-
-
+from sklearn.neural_network import MLPRegressor
+from sklearn.model_selection import train_test_split
 
 pd.set_option('mode.chained_assignment', None)
 
 df = pd.read_csv('train.csv')
+temp = pd.concat([df['book_review_count'], df['book_rating_count']], axis=1)
+print(temp.corr())
 '''
 simple = pd.concat([x, y], axis=1)
 print(simple.head())
 simple.to_csv('simple.csv', sep=',')
 '''
-x_train, x_test, y_train, y_test = simpleLoader.cleandata(df)
+x, y = simpleLoader.number_data(df)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.05, random_state=42)
 
 
 print('shape of x_train: ', x_train.shape)
 print('shape of x_test: ', x_test.shape)
 print('shape of y_train: ', y_train.shape)
 print('shape of y_test: ', y_test.shape)
+
+
 
 def bigspace(name):
     print('####################################################')
@@ -42,13 +47,13 @@ bigspace('  Linear Regression Models  ')
 
 '''
 for model in models1:
-    space()
     model.fit(x_train, y_train)
-    print(model)
-    print(mean_squared_error(y_test, model.predict(x_test), squared=False))
     result.append({'name': model.__str__(),
                    'score': mean_squared_error(y_test, model.predict(x_test), squared=False)})
-    space()
+
+result = pd.DataFrame(result)
+print(result)
+result = []
 
 bigspace(' Ensemble of Models  ')
 cleanEnsembles = [GradientBoostingRegressor(n_estimators=200),
@@ -57,14 +62,36 @@ cleanEnsembles = [GradientBoostingRegressor(n_estimators=200),
                   BaggingRegressor(n_estimators=200),
                   RandomForestRegressor(n_estimators=200),
                   ExtraTreesRegressor(n_estimators=200)]
-result = pd.DataFrame(result)
-print(result)
+'''
+'''
 for model in cleanEnsembles:
-    space()
     model.fit(x_train, y_train)
-    print(model)
-    print(mean_squared_error(y_test, model.predict(x_test), squared=False))
-    space()
     result.append({'name': model.__str__(),
                    'score': mean_squared_error(y_test, model.predict(x_test), squared=False)})
 
+result = pd.DataFrame(result)
+print(result)
+result = []
+
+neural_nets = [MLPRegressor(hidden_layer_sizes=50),
+               MLPRegressor(hidden_layer_sizes=100),
+               MLPRegressor(hidden_layer_sizes=200),
+               MLPRegressor(hidden_layer_sizes=500),
+               MLPRegressor(max_iter=100, alpha=1e-4),
+               MLPRegressor(max_iter=300, alpha=1e-5),
+               MLPRegressor(max_iter=500, alpha=1e-7),
+               MLPRegressor(solver='lbfgs'),
+               MLPRegressor(solver='sgd'),
+               MLPRegressor()]
+
+bigspace(' Neural Networks  ')
+
+
+for model in neural_nets:
+    model.fit(x_train, y_train)
+    result.append({'name': model.__str__(),
+                   'score': mean_squared_error(y_test, model.predict(x_test), squared=False)})
+
+
+result = pd.DataFrame(result)
+print(result)
