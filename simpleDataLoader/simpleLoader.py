@@ -23,7 +23,7 @@ print(df.info())
 print(missing_values_table(df))
 
 df = df.dropna()
-print(df.info())
+print(df.nunique())
 
 y = df['book_rating']
 x = df[['book_format', 'book_pages', 'book_review_count', 'book_rating_count']]
@@ -31,6 +31,9 @@ x = df[['book_format', 'book_pages', 'book_review_count', 'book_rating_count']]
 print(x.head())
 print(y.head())
 
+simple = pd.concat([x, y], axis=1)
+print(simple.head())
+simple.to_csv('simple.csv', sep=',')
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 
@@ -38,3 +41,5 @@ print('shape of x_train: ', x_train.shape)
 print('shape of x_test: ', x_test.shape)
 print('shape of y_train: ', y_train.shape)
 print('shape of y_test: ', y_test.shape)
+
+
