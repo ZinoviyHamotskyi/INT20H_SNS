@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 pd.set_option('mode.chained_assignment', None)
 
 df = pd.read_csv('train.csv')
+df.info()
 temp = pd.concat([df['book_review_count'], df['book_rating_count']], axis=1)
 print(temp.corr())
 '''
@@ -17,7 +18,8 @@ simple = pd.concat([x, y], axis=1)
 print(simple.head())
 simple.to_csv('simple.csv', sep=',')
 '''
-x, y = simpleLoader.number_data(df)
+x, y = simpleLoader.book_format_data(df)
+print(x, y)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.05, random_state=42)
 
 
@@ -47,7 +49,7 @@ bigspace('  Linear Regression Models  ')
 
 '''
 for model in models1:
-    model.fit(x_train, y_train)
+    model.fit(x_train.to_numpy(), y_train)
     result.append({'name': model.__str__(),
                    'score': mean_squared_error(y_test, model.predict(x_test), squared=False)})
 
@@ -75,8 +77,8 @@ result = []
 
 neural_nets = [MLPRegressor(hidden_layer_sizes=50),
                MLPRegressor(hidden_layer_sizes=100),
-               MLPRegressor(hidden_layer_sizes=200),
-               MLPRegressor(hidden_layer_sizes=500),
+               MLPRegressor(hidden_layer_sizes=20),
+               MLPRegressor(hidden_layer_sizes=5),
                MLPRegressor(max_iter=100, alpha=1e-4),
                MLPRegressor(max_iter=300, alpha=1e-5),
                MLPRegressor(max_iter=500, alpha=1e-7),
