@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
 
 def missing_values_table(df):
     mis_val = df.isnull().sum()
@@ -27,6 +28,20 @@ print(df.nunique())
 
 y = df['book_rating']
 x = df[['book_format', 'book_pages', 'book_review_count', 'book_rating_count']]
+
+#pages to int
+x.loc['book_pages'] = x.book_pages.apply(lambda x: int(x.split()[0]))
+
+#one-hot encoding
+encoder = OneHotEncoder()
+matrix = pd.DataFrame.sparse.from_spmatrix(encoder.fit_transform(pd.DataFrame(x.book_format)))
+feature_names = list(encoder.get_feature_names())
+columns = {i: feature_names[i] for i in range(107)}
+matrix = matrix.rename(columns=columns)
+x = x.reset_index().drop("index", 1)
+#concating
+x = pd.concat([x, matrix], 1)
+del x["book_format"]
 
 print(x.head())
 print(y.head())
