@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 
@@ -30,7 +31,7 @@ y = df['book_rating']
 x = df[['book_format', 'book_pages', 'book_review_count', 'book_rating_count']]
 
 #pages to int
-x.loc['book_pages'] = x.book_pages.apply(lambda x: int(x.split()[0]))
+x['book_pages'] = x.book_pages.apply(lambda x: int(x.split()[0]))
 
 #one-hot encoding
 encoder = OneHotEncoder()
@@ -51,6 +52,12 @@ print(simple.head())
 simple.to_csv('simple.csv', sep=',')
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+
+x_train = pd.concat([x_train.reset_index().drop("index", 1), y_train.reset_index().drop("index", 1)], 1)
+x_selected = x_train[(x_train.book_pages > x_train.book_pages.quantile(0.05)) | (x_train.book_pages < x_train.book_pages.quantile(0.95))]
+
+x_train = x_selected.drop(axis=1, labels=['book_rating'])
+y_train = x_selected.book_rating
 
 print('shape of x_train: ', x_train.shape)
 print('shape of x_test: ', x_test.shape)
