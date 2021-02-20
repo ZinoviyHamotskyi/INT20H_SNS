@@ -80,6 +80,3 @@ for model in models:
     model.fit(x_train, y_train)
     print(model)
     print(mean_squared_error(y_test, model.predict(x_test), squared=False))
-
-
-
