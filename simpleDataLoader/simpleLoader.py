@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
+from sklearn.decomposition import PCA
 
 def number_data(dataframe):
     x = dataframe[['book_pages', 'book_review_count', 'book_rating_count', 'book_rating']]
@@ -21,6 +22,13 @@ def number_data(dataframe):
     y = x.book_rating
     x = x.drop(axis=1, labels=['book_rating'])
 
+    scaler = MinMaxScaler()
+    data = pd.DataFrame(scaler.fit_transform(x))
+    data = data.rename(columns={0:'book_pages',1:'book_review_count',2:'book_rating_count'})
+
+    decompostor = PCA(1)
+    x = pd.concat([pd.DataFrame(x.book_pages).reset_index().drop(['index'], 1), pd.DataFrame(decompostor.fit_transform(data[['book_review_count', 'book_rating_count']])).reset_index().drop(['index'], 1)], 1)
+    x = x.rename(columns={0:"popularity"})
     return x, y
 
 
