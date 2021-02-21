@@ -2,3 +2,6 @@ Flask
 numpy
 pandas
 scikit_learn
+nltk
+scipy
+re
