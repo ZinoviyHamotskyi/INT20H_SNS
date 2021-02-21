@@ -4,11 +4,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 
 def number_data(dataframe):
-    x = dataframe[['book_pages', 'book_review_count', 'book_rating_count', 'book_rating']]
+    x = dataframe[['book_pages', 'book_review_count', 'book_rating']]
     x = x.dropna()
     x.book_pages = x.book_pages.apply(lambda x: int(str(x).split()[0]))
     
-    feature_to_cut = ['book_pages', 'book_review_count', 'book_rating_count']
+    feature_to_cut = ['book_pages', 'book_review_count']
     lower = {}
     upper = {}
     for feature in feature_to_cut:
@@ -24,12 +24,12 @@ def number_data(dataframe):
 
 
 def number_data_test(dataframe, lower, upper):
-    x = dataframe[['book_pages', 'book_review_count', 'book_rating_count']]
+    x = dataframe[['book_pages', 'book_review_count']]
     x = x.fillna(0)
     x.book_pages = x.book_pages.apply(lambda x: int(str(x).split()[0]))
     
 
-    feature_to_cut = ['book_pages', 'book_review_count', 'book_rating_count']
+    feature_to_cut = ['book_pages', 'book_review_count']
 
     for feature in feature_to_cut:
         x[x[feature] < lower[feature]][feature] = lower[feature]
